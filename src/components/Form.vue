@@ -4,23 +4,23 @@
       <h3 class="full-width">Личные данные</h3>
       <div class="wrapper__last-name">
         <label for="last-name">Фамилия</label>
-        <input name="last-name" type="text" class="last-name input" />
+        <input name="last_name" type="text"  ref="last_name" class="last-name input" />
       </div>
       <div class="wrapper__first-name">
         <label for="first-name">Имя</label>
-        <input name="first-name" type="text" class="first-name input" />
+        <input name="first_name" type="text" ref="first_name" class="first-name input" />
       </div>
       <div class="wrapper__patronymic">
         <label for="patronimyc">Отчество</label>
-        <input name="patronymic" type="text" class="patronimyc input" />
+        <input name="patronimyc" type="text" ref="patronimyc" class="patronimyc input" />
       </div>
       <div class="birthday-date">
         <label for="birthday">Дата рождения</label>
-        <input name="birthday-date" type="date" class="birthday input" />
+        <input name="birthday_date" type="date" class="birthday input" />
       </div>
       <div class="wrapper__email full-width">
         <label for="email">E-mail</label>
-        <input name="email" type="email" class="email input" />
+        <input name="email" type="email" class="email input" placeholder="test-email@mail.com" />
       </div>
       <div class="wrapper__gender">
         <span class="gender">Пол</span>
@@ -50,21 +50,6 @@
         </div>
       </div>
       <h3 class="full-width">Паспортные данные</h3>
-      <!-- <input
-          name="citizenship"
-          list="citizenships"
-          placeholder="Start typing..."
-          v-model="selected_citizenship"
-        />
-        <datalist id="citizenships" class="citizenship__selector input">
-          <option
-            v-for="option in citizenship"
-            :value="option.nationality"
-            :key="option.id"
-          >
-            {{ option.nationality }}
-          </option>
-        </datalist> -->
       <div
         class="wrapper__citizenship-selector"
         v-click-outside="hideCitizenships"
@@ -75,9 +60,9 @@
           <input
             id="citizenship"
             class="input"
+            v-model="searchCitizenship"
             autocomplete="off"
             @focus="isDropdownCitOpen = true"
-            v-model="selected_citizenship"
           />
           <img
             class="svg"
@@ -87,7 +72,7 @@
           />
         </div>
         <div v-if="isDropdownCitOpen" class="citizenship-selector__dropdown">
-          <ul class="list">
+          <ul class="list" v-if="citizenship.length">
             <li
               class="li"
               v-for="option in citizenship"
@@ -98,6 +83,7 @@
               {{ option.nationality }}
             </li>
           </ul>
+          <div v-else class="empty">Ничего не найдено</div>
         </div>
       </div>
       <div
@@ -108,15 +94,15 @@
       >
         <div class="wrapper__pass-seria">
           <label for="pass-seria">Серия паспорта</label>
-          <input name="pass-seria" type="text" class="pass-seria input" />
+          <input name="pass_seria" type="text" class="pass-seria input" />
         </div>
         <div class="wrapper__pass-num">
           <label for="pass-num">Номер паспорта</label>
-          <input name="pass-num" type="text" class="pass-num input" />
+          <input name="pass_num" type="text" class="pass-num input" />
         </div>
         <div class="wrapper__pass-date">
           <label for="pass-date">Дата выдачи</label>
-          <input name="pass-date" type="date" class="pass-date input" />
+          <input name="pass_date" type="date" class="pass-date input" />
         </div>
       </div>
       <div
@@ -128,7 +114,7 @@
         <div class="wrapper__last-name-other">
           <label for="last-name-other">Фамилия на латинице</label>
           <input
-            name="last-name-other"
+            name="last_name_other"
             type="text"
             class="last-name-other input"
           />
@@ -147,27 +133,11 @@
         <div class="wrapper__pass-num-other">
           <label for="pass-num-other">Номер паспорта</label>
           <input
-            name="pass-num-other"
+            name="pass_num_other"
             type="text"
             class="pass-num-other input"
           />
         </div>
-        <!-- <div class="wrapper__country">
-          <label for="pass-country__selector">Страна выдачи</label>
-          <select
-            name="pass-country"
-            class="pass-country__selector input"
-            v-model="selected_country"
-          >
-            <option
-              v-for="option in citizenship"
-              :value="option.nationality"
-              :key="option.uid"
-            >
-              {{ option.nationality }}
-            </option>
-          </select>
-        </div> -->
         <div class="wrapper__country-selector" v-click-outside="hideCountries">
           <label for="country">Страна выдачи</label>
           <br />
@@ -202,23 +172,10 @@
             </ul>
           </div>
         </div>
-        <!-- <div class="wrapper__pass-type">
-          <label for="pass-type__selector">Тип паспорта</label>
-          <select
-            name="pass-type"
-            class="pass-type__selector input"
-            v-model="selected_pass_type"
-          >
-            <option
-              v-for="option in pass_types"
-              :value="option.type"
-              :key="option.id"
-            >
-              {{ option.type }}
-            </option>
-          </select>
-        </div> -->
-          <div class="wrapper__passport-selector" v-click-outside="hidePassportTypes">
+        <div
+          class="wrapper__passport-selector"
+          v-click-outside="hidePassportTypes"
+        >
           <label for="passport_type">Тип паспорта</label>
           <br />
 
@@ -261,7 +218,7 @@
           <label>
             <input
               type="radio"
-              name="сhanged-name"
+              name="сhanged_name"
               class="answer"
               value="Нет"
               v-model="name_picked"
@@ -272,7 +229,7 @@
           <label class="yes-label">
             <input
               type="radio"
-              name="сhanged-name"
+              name="сhanged_name"
               class="answer"
               value="Да"
               v-model="name_picked"
@@ -282,16 +239,17 @@
         </div>
       </div>
       <div v-if="name_picked === 'Да'" class="changed-name">
-        <div class="wrapper__new-last-name">
-          <label for="new-last-name">Предыдущая фамилия</label>
-          <input name="new-last-name" type="text" class="new-last-name input" />
+        <div class="wrapper__old-last-name">
+          <label for="old-last-name">Предыдущая фамилия</label>
+          <input name="old_last_name" type="text" ref="old_last_name" class="old-last-name input" />
         </div>
-        <div class="wrapper__new-first-name">
-          <label for="new-first-name">Предыдущее имя</label>
+        <div class="wrapper__old-first-name">
+          <label for="old-first-name">Предыдущее имя</label>
           <input
-            name="new-first-name"
+            name="old_first_name"
             type="text"
-            class="new-first-name input"
+            ref="old_first_name" 
+            class="old-first-name input"
           />
         </div>
       </div>
@@ -307,12 +265,11 @@
 import citizenshipJson from "../assets/data/citizenships.json"
 import passTypesJson from "../assets/data/passport-types.json"
 import ClickOutside from "vue-click-outside";
-// import debounce  from "../helpers/debounce.js";
+import { debounce } from "../helpers/debounce.js";
 
 export default {
   data() {
     return {
-      form: null,
       isDropdownCitOpen: false,
       isDropdownCountryOpen: false,
       isDropdownTypesOpen: false,
@@ -323,8 +280,9 @@ export default {
       selected_country: '',
       selected_pass_type: '',
       gender_picked: 'Мужской',
-      name_picked: 'Да',
+      name_picked: 'Нет',
       debouncedSearchCitizenship: null,
+      searchCitizenship: ''
 
     };
   },
@@ -342,28 +300,37 @@ export default {
       const data = new FormData(this.$refs.form);
       const value = Object.fromEntries(data);
       console.log(value);
+      this.$refs.form.reset();
     },
     getCitizenship(searchWord) {
       console.log("FETCH CITIZENSHIP EVENT: GET CITIZENSHIP FROM API", searchWord);
 
-      this.citizenship = citizenshipJson.filter((cit) =>
-        cit.title.includes(searchWord)
+      this.citizenship = citizenshipJson.filter((cit) => {
+        return cit.nationality.toLowerCase().includes(searchWord.toLowerCase()) }
       );
     },
     chooseCitizenship(e) {
       this.selected_citizenship = e.target.innerText;
+      this.hideCitizenships();
     },
     chooseCountry(e) {
       this.selected_country = e.target.innerText;
+      this.hideCountries();
     },
     chooseType(e) {
       this.selected_pass_type = e.target.innerText;
-    }
-  },
-    created() {
-    // this.citizenship = citizenshipJson;
-    // this.debouncedSearchSkills = debounce(this.getCitizenship, 2000);  
+      this.hidePassportTypes();
     },
+  },
+  created() {
+    this.citizenship = citizenshipJson;
+    this.debouncedSearchCitizenship = debounce(this.getCitizenship, 1000);
+  },
+  watch: {
+    searchCitizenship(newValue) {
+      this.debouncedSearchCitizenship(newValue);
+    },
+  },
   directives: {
     ClickOutside,
   },
@@ -372,20 +339,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.input-container {
-  position: relative;
-}
-.svg {
-  position: absolute;
-  right: 4px;
-  top: 16px;
-}
+
 .my-form {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-gap: 16px;
 }
-
 .wrapper {
   &__last-name {
     grid-column: 1 e("/") 3;
@@ -414,10 +373,10 @@ export default {
   &__changed-name {
     grid-column: 1 e("/") 7;
   }
-  &__new-last-name {
+  &__old-last-name {
     grid-column: 1 e("/") 4;
   }
-  &__new-first-name {
+  &__old-first-name {
     grid-column: 4 e("/") 7;
   }
   &__last-name-other {
@@ -439,7 +398,14 @@ export default {
     grid-column: 6 e("/") 7;
   }
 }
-
+.input-container {
+  position: relative;
+}
+.svg {
+  position: absolute;
+  right: 4px;
+  top: 16px;
+}
 .gender {
   &__title {
     margin-top: 8px;
@@ -468,7 +434,6 @@ export default {
 .birthday-date {
   grid-column: 1 e("/") 4;
 }
-
 .citizenship {
   &__selector {
     width: 100%;
@@ -493,17 +458,20 @@ export default {
   height: 55px;
   overflow: hidden;
 }
-.citizenship-selector{
+.citizenship-selector {
   &__dropdown {
     position: relative;
   }
 }
-.country-selector{
+.empty {
+  margin-top: 8px;
+}
+.country-selector {
   &__dropdown {
     position: relative;
   }
 }
-.types-selector{
+.types-selector {
   &__dropdown {
     position: relative;
   }
@@ -517,7 +485,6 @@ export default {
 .changed-name {
   display: contents;
 }
-
 .input {
   width: 100%;
   border: 1px solid LightGray;
@@ -525,7 +492,6 @@ export default {
   margin-top: 4px;
   font-size: 16px;
 }
-
 .pass-date {
   padding: 6px;
 }
