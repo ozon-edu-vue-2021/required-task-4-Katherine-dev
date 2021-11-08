@@ -1,26 +1,56 @@
 <template>
   <div class="form">
-    <form ref="form" class="my-form" @submit.prevent="print">
+    <form ref="form" class="my-form" @submit.prevent="validate">
       <h3 class="full-width">Личные данные</h3>
       <div class="wrapper__last-name">
         <label for="last-name">Фамилия</label>
-        <input name="last_name" type="text"  ref="last_name" class="last-name input" />
+        <input
+          name="last_name"
+          type="text"
+          ref="last_name"
+          class="last-name input"
+          required
+        />
       </div>
       <div class="wrapper__first-name">
         <label for="first-name">Имя</label>
-        <input name="first_name" type="text" ref="first_name" class="first-name input" />
+        <input
+          name="first_name"
+          type="text"
+          ref="first_name"
+          class="first-name input"
+          required
+        />
       </div>
       <div class="wrapper__patronymic">
         <label for="patronimyc">Отчество</label>
-        <input name="patronimyc" type="text" ref="patronimyc" class="patronimyc input" />
+        <input
+          name="patronimyc"
+          type="text"
+          ref="patronimyc"
+          class="patronimyc input"
+        />
       </div>
       <div class="birthday-date">
         <label for="birthday">Дата рождения</label>
-        <input name="birthday_date" type="date" class="birthday input" />
+        <input
+          name="birthday_date"
+          ref="birthday_date"
+          type="date"
+          class="birthday input"
+          required
+        />
       </div>
       <div class="wrapper__email full-width">
         <label for="email">E-mail</label>
-        <input name="email" type="email" class="email input" placeholder="test-email@mail.com" />
+        <input
+          name="email"
+          type="text"
+          ref="email"
+          class="email input"
+          placeholder="test-email@mail.com"
+          required
+        />
       </div>
       <div class="wrapper__gender">
         <span class="gender">Пол</span>
@@ -33,6 +63,7 @@
               name="gender"
               value="Мужской"
               v-model="gender_picked"
+              checked
             />
             Мужской
           </label>
@@ -63,6 +94,7 @@
             v-model="searchCitizenship"
             autocomplete="off"
             @focus="isDropdownCitOpen = true"
+            required
           />
           <img
             class="svg"
@@ -94,15 +126,27 @@
       >
         <div class="wrapper__pass-seria">
           <label for="pass-seria">Серия паспорта</label>
-          <input name="pass_seria" type="text" class="pass-seria input" />
+          <input
+            name="pass_seria"
+            ref="pass_seria"
+            type="text"
+            class="pass-seria input"
+            required
+          />
         </div>
         <div class="wrapper__pass-num">
           <label for="pass-num">Номер паспорта</label>
-          <input name="pass_num" type="text" class="pass-num input" />
+          <input
+            name="pass_num"
+            ref="pass_num"
+            type="text"
+            class="pass-num input"
+            required
+          />
         </div>
         <div class="wrapper__pass-date">
           <label for="pass-date">Дата выдачи</label>
-          <input name="pass_date" type="date" class="pass-date input" />
+          <input name="pass_date" type="date" class="pass-date input" required/>
         </div>
       </div>
       <div
@@ -115,6 +159,7 @@
           <label for="last-name-other">Фамилия на латинице</label>
           <input
             name="last_name_other"
+            ref="last_name_other"
             type="text"
             class="last-name-other input"
           />
@@ -122,9 +167,11 @@
         <div class="wrapper__first-name-other">
           <label for="first-name-other">Имя на латинице</label>
           <input
-            name="first-name-other"
+            name="first_name_other"
+            ref="first_name_other"
             type="text"
             class="first-name-other input"
+            required
           />
         </div>
         <span class="full-width"
@@ -135,7 +182,9 @@
           <input
             name="pass_num_other"
             type="text"
+            ref="pass_num_other"
             class="pass-num-other input"
+            required
           />
         </div>
         <div class="wrapper__country-selector" v-click-outside="hideCountries">
@@ -149,6 +198,7 @@
               autocomplete="off"
               @focus="isDropdownCountryOpen = true"
               v-model="selected_country"
+              required
             />
             <img
               class="svg"
@@ -162,7 +212,7 @@
             <ul class="list">
               <li
                 class="li"
-                v-for="option in citizenship"
+                v-for="option in countries"
                 :value="option.country"
                 :key="option.uid"
                 @click="chooseCountry"
@@ -186,6 +236,7 @@
               autocomplete="off"
               @focus="isDropdownTypesOpen = true"
               v-model="selected_pass_type"
+              required
             />
             <img
               class="svg"
@@ -222,6 +273,7 @@
               class="answer"
               value="Нет"
               v-model="name_picked"
+              checked
             />
             Нет
           </label>
@@ -241,15 +293,22 @@
       <div v-if="name_picked === 'Да'" class="changed-name">
         <div class="wrapper__old-last-name">
           <label for="old-last-name">Предыдущая фамилия</label>
-          <input name="old_last_name" type="text" ref="old_last_name" class="old-last-name input" />
+          <input
+            name="old_last_name"
+            type="text"
+            ref="old_last_name"
+            class="old-last-name input"
+            required
+          />
         </div>
         <div class="wrapper__old-first-name">
           <label for="old-first-name">Предыдущее имя</label>
           <input
             name="old_first_name"
             type="text"
-            ref="old_first_name" 
+            ref="old_first_name"
             class="old-first-name input"
+            required
           />
         </div>
       </div>
@@ -267,6 +326,15 @@ import passTypesJson from "../assets/data/passport-types.json"
 import ClickOutside from "vue-click-outside";
 import { debounce } from "../helpers/debounce.js";
 
+const RUS_REG_EXP = /^[А-Яа-яЁё]+/;
+// Отчество может отсутствовать
+const PATR_REG_EXP = /^[А-Яа-яЁё]*/;
+const EMAIL_REG_EXP = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DATE_REG_EXP = /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/;
+const PASS_SER_REG_EXP =/^\d{4}$/;
+const PASS_NUM_RUS_REG_EXP =/^\d{6}$/;
+const ENG_REG_EXP = /^[A-Za-z]+/;
+
 export default {
   data() {
     return {
@@ -274,7 +342,7 @@ export default {
       isDropdownCountryOpen: false,
       isDropdownTypesOpen: false,
       citizenship: citizenshipJson,
-      country: citizenshipJson,
+      countries: citizenshipJson,
       pass_types: passTypesJson,
       selected_citizenship: '',
       selected_country: '',
@@ -310,7 +378,12 @@ export default {
       );
     },
     chooseCitizenship(e) {
+      this.searchCitizenship = e.target.innerText;
       this.selected_citizenship = e.target.innerText;
+      if (this.selected_citizenship === 'Russia') {
+        this.selected_country = '';
+        this.selected_pass_type = '';
+      }
       this.hideCitizenships();
     },
     chooseCountry(e) {
@@ -321,6 +394,133 @@ export default {
       this.selected_pass_type = e.target.innerText;
       this.hidePassportTypes();
     },
+    onRusInput() {
+      let valid = true;
+      const data = new FormData(this.$refs.form);
+      const value = Object.fromEntries(data);
+      if (!RUS_REG_EXP.test(value.last_name)) {
+        this.$refs.last_name.classList.add('invalid');
+        alert("Проверьте правильность ввода Фамилии. Можно вводить только русские буквы.");
+        valid = false;
+      } else {
+        this.$refs.last_name.classList.remove('invalid');
+      }
+      if (!RUS_REG_EXP.test(value.first_name)) {
+        this.$refs.first_name.classList.add('invalid');
+        alert("Проверьте правильность ввода Имени. Можно вводить только русские буквы.");
+        valid = false;
+      } else {
+        this.$refs.first_name.classList.remove('invalid');
+      }
+      if (!PATR_REG_EXP.test(value.patronimyc)) {
+        this.$refs.patronimyc.classList.add('invalid');
+        alert("Проверьте правильность ввода Отчества. Можно вводить только русские буквы.");
+        valid = false;
+      } else {
+        this.$refs.patronimyc.classList.remove('invalid');
+      }
+      if (this.name_picked === 'Да') {
+        if (!RUS_REG_EXP.test(value.old_last_name)) {
+          this.$refs?.old_last_name?.classList.add('invalid');
+          alert("Проверьте правильность ввода Предыдущей фамилии. Можно вводить только русские буквы.");
+          valid = false;
+        } else {
+          this.$refs?.old_last_name?.classList.remove('invalid');
+        }
+        if (!RUS_REG_EXP.test(value.old_first_name)) {
+          this.$refs?.old_first_name?.classList.add('invalid');
+          alert("Проверьте правильность ввода Предыдущего имени. Можно вводить только русские буквы.");
+          valid = false;
+        } else {
+          this.$refs?.old_first_name?.classList.remove('invalid');
+        }
+      }
+      return valid;
+    },
+    validateBirthDate() {
+      const data = new FormData(this.$refs.form);
+      const value = Object.fromEntries(data);
+      let today = new Date().toISOString().substring(0, 10);
+      if (!DATE_REG_EXP.test(value.birthday_date) || value.birthday_date > today || value.birthday_date < '1900-01-01') {
+        alert("Проверьте правильность ввода Даты рождения");
+        this.$refs.birthday_date.classList.add('invalid');
+        return false;
+      } else {
+        this.$refs.birthday_date.classList.remove('invalid');
+      }
+      
+      return true;
+    },
+    validateEmail() {
+      const data = new FormData(this.$refs.form);
+      const value = Object.fromEntries(data);
+
+      if (!EMAIL_REG_EXP.test(value.email)) {
+        alert("Проверьте правильность ввода email");
+        this.$refs.email.classList.add('invalid');
+        return false;
+      } else {
+        this.$refs.email.classList.remove('invalid');
+      }
+
+      return true;
+    },
+    validatePassport() {
+      let valid = true;
+      const data = new FormData(this.$refs.form);
+      const value = Object.fromEntries(data);
+      if (this.selected_citizenship === 'Russia') {
+        if (!PASS_SER_REG_EXP.test(value.pass_seria)) {
+          alert("Проверьте правильность ввода Серии паспорта. Она должна состоять из четрых цифр.");
+          this.$refs.pass_seria.classList.add('invalid');
+          valid = false;
+        } else {
+          this.$refs.pass_seria.classList.remove('invalid');
+        }
+        if (!PASS_NUM_RUS_REG_EXP.test(value.pass_num)) {
+          alert("Проверьте правильность ввода Номера паспорта. Он должен состоять из шести цифр.");
+          this.$refs.pass_num.classList.add('invalid');
+          valid = false;
+        } else {
+          this.$refs.pass_num.classList.remove('invalid');
+        }
+      } else {
+        if (!ENG_REG_EXP.test(value.last_name_other)) {
+          alert("Проверьте правильность ввода Фамилии на латинице");
+          this.$refs.last_name_other.classList.add('invalid');
+          valid = false;
+        } else {
+          this.$refs.last_name_other.classList.remove('invalid');
+        }
+        if (!ENG_REG_EXP.test(value.first_name_other)) {
+          alert("Проверьте правильность ввода Имени на латинице");
+          this.$refs.first_name_other.classList.add('invalid');
+          valid = false;
+        } else {
+          this.$refs.first_name_other.classList.remove('invalid');
+        }
+      }
+
+      return valid;
+    },
+    validate() { 
+      const isValidRus = this.onRusInput();
+      const isValidDate = this.validateBirthDate();
+      const isValidEmail = this.validateEmail();
+      const isValidPassport = this.validatePassport();
+      
+      const isValid = isValidRus && isValidDate && isValidEmail && isValidPassport;
+
+      if (isValid) {
+        this.print();
+        this.name_picked = "Нет";
+        this.gender_picked = "Мужской";
+        this.selected_citizenship = '';
+        this.searchCitizenship = '';
+        this.selected_country = '';
+        this.selected_pass_type = '';
+      }
+    }
   },
   created() {
     this.citizenship = citizenshipJson;
@@ -339,7 +539,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
 .my-form {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -503,5 +702,9 @@ export default {
   border-radius: 3px;
   border: 0;
   font-size: 16px;
+}
+.invalid {
+  transition: 0.28s;
+  border: 1.5px solid rgba(226, 27, 16, 0.5);
 }
 </style>
