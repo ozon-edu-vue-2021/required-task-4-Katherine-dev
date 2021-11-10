@@ -1,6 +1,6 @@
 <template>
   <div class="form">
-    <form ref="form" class="my-form" @submit.prevent="validate">
+    <form ref="form" class="my-form" @submit.prevent="print">
       <h3 class="full-width">Личные данные</h3>
       <div class="wrapper__last-name">
         <label for="last-name">Фамилия</label>
@@ -8,7 +8,9 @@
           name="last_name"
           type="text"
           ref="last_name"
+          v-model="dataForm.last_name"
           class="last-name input"
+          :class="{ invalid: isLastNameValid === false && isSubmitted }"
           required
         />
       </div>
@@ -18,7 +20,9 @@
           name="first_name"
           type="text"
           ref="first_name"
+          v-model="dataForm.first_name"
           class="first-name input"
+          :class="{ invalid: isNameValid === false && isSubmitted }"
           required
         />
       </div>
@@ -28,7 +32,9 @@
           name="patronimyc"
           type="text"
           ref="patronimyc"
+          v-model="dataForm.patronimyc"
           class="patronimyc input"
+          :class="{ invalid: isPatrValid === false && isSubmitted }"
         />
       </div>
       <div class="birthday-date">
@@ -36,8 +42,10 @@
         <input
           name="birthday_date"
           ref="birthday_date"
+          v-model="dataForm.birthday_date"
           type="date"
           class="birthday input"
+          :class="{ invalid: isBirthDateValid === false && isSubmitted }"
           required
         />
       </div>
@@ -47,7 +55,9 @@
           name="email"
           type="text"
           ref="email"
+          v-model="dataForm.email"
           class="email input"
+          :class="{ invalid: isEmailValid === false && isSubmitted }"
           placeholder="test-email@mail.com"
           required
         />
@@ -130,7 +140,9 @@
             name="pass_seria"
             ref="pass_seria"
             type="text"
+            v-model="dataForm.pass_seria"
             class="pass-seria input"
+            :class="{ invalid: isPassSeriaValid === false && isSubmitted }"
             required
           />
         </div>
@@ -140,13 +152,20 @@
             name="pass_num"
             ref="pass_num"
             type="text"
+            v-model="dataForm.pass_num_rus"
             class="pass-num input"
+            :class="{ invalid: isPassRusNumValid === false && isSubmitted }"
             required
           />
         </div>
         <div class="wrapper__pass-date">
           <label for="pass-date">Дата выдачи</label>
-          <input name="pass_date" type="date" class="pass-date input" required/>
+          <input
+            name="pass_date"
+            type="date"
+            class="pass-date input"
+            required
+          />
         </div>
       </div>
       <div
@@ -161,7 +180,9 @@
             name="last_name_other"
             ref="last_name_other"
             type="text"
+            v-model="dataForm.last_name_other"
             class="last-name-other input"
+            :class="{ invalid: isLastNameOtherValid === false && isSubmitted }"
           />
         </div>
         <div class="wrapper__first-name-other">
@@ -170,7 +191,9 @@
             name="first_name_other"
             ref="first_name_other"
             type="text"
+            v-model="dataForm.first_name_other"
             class="first-name-other input"
+            :class="{ invalid: isFirstNameOtherValid === false && isSubmitted }"
             required
           />
         </div>
@@ -297,7 +320,9 @@
             name="old_last_name"
             type="text"
             ref="old_last_name"
+            v-model="dataForm.old_last_name"
             class="old-last-name input"
+            :class="{ invalid: isOldLastNameValid === false && isSubmitted }"
             required
           />
         </div>
@@ -307,7 +332,9 @@
             name="old_first_name"
             type="text"
             ref="old_first_name"
+            v-model="dataForm.old_first_name"
             class="old-first-name input"
+            :class="{ invalid: isOldNameValid === false && isSubmitted }"
             required
           />
         </div>
@@ -327,8 +354,6 @@ import ClickOutside from "vue-click-outside";
 import { debounce } from "../helpers/debounce.js";
 
 const RUS_REG_EXP = /^[А-Яа-яЁё]+/;
-// Отчество может отсутствовать
-const PATR_REG_EXP = /^[А-Яа-яЁё]*/;
 const EMAIL_REG_EXP = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DATE_REG_EXP = /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/;
 const PASS_SER_REG_EXP =/^\d{4}$/;
@@ -350,9 +375,108 @@ export default {
       gender_picked: 'Мужской',
       name_picked: 'Нет',
       debouncedSearchCitizenship: null,
-      searchCitizenship: ''
+      searchCitizenship: '',
+      isSubmitted: false,
+
+      dataForm: {
+        last_name: '',
+        first_name: '',
+        patronimyc: '',
+        old_last_name: '',
+        old_first_name: '',
+        birthday_date: '',
+        email: '',
+        pass_seria: '',
+        pass_num_rus: '',
+        last_name_other: '',
+        first_name_other: ''
+      }
 
     };
+  },
+  computed: {
+    isNameValid() {
+        if (!RUS_REG_EXP.test(this.dataForm.first_name)) {
+         return false;
+       }
+       return true;
+    },
+    isLastNameValid() {
+       if (!RUS_REG_EXP.test(this.dataForm.last_name)) {
+         return false;
+       }
+       return true;
+    },
+    isPatrValid() {
+      if (this.dataForm.patronimyc.length === 0) {
+        return true;
+      }
+      if (!RUS_REG_EXP.test(this.dataForm.patronimyc)) {
+         return false;
+       }
+       return true;
+    },
+    isOldLastNameValid() {
+      if (this.name_picked === 'Да') {
+        if (!RUS_REG_EXP.test(this.dataForm.old_last_name)) {
+         return false;
+        }
+      }
+       return true;
+    },
+    isOldNameValid() {
+      if (this.name_picked === 'Да') {
+        if (!RUS_REG_EXP.test(this.dataForm.old_first_name)) {
+         return false;
+        }
+      }
+      return true;
+    },
+    isBirthDateValid() {
+      let today = new Date();
+      if (!DATE_REG_EXP.test(this.dataForm.birthday_date) || this.dataForm.birthday_date > today || this.dataForm.birthday_date < '01.01.1900') {
+        return false;
+      } 
+      return true;
+    },
+    isEmailValid() {
+      if (!EMAIL_REG_EXP.test(this.dataForm.email)) {
+        return false;
+      }
+      return true;
+    },
+    isPassSeriaValid() {
+      if (this.selected_citizenship === 'Russia') {
+        if (!PASS_SER_REG_EXP.test(this.dataForm.pass_seria)) {
+          return false;
+        }
+      }
+      return true;
+    },
+    isPassRusNumValid() {
+      if (this.selected_citizenship === 'Russia') {
+        if (!PASS_NUM_RUS_REG_EXP.test(this.dataForm.pass_num_rus)) {
+          return false;
+        }
+      }
+      return true;
+    },
+    isLastNameOtherValid() {
+      if (this.selected_citizenship !== 'Russia') {
+        if (!ENG_REG_EXP.test(this.dataForm.last_name_other)) {
+          return false;
+        }
+      }
+      return true;
+    },
+     isFirstNameOtherValid() {
+      if (this.selected_citizenship !== 'Russia') {
+        if (!ENG_REG_EXP.test(this.dataForm.first_name_other)) {
+          return false;
+        }
+      }
+      return true;
+    }
   },
   methods: {
     hideCitizenships() {
@@ -365,17 +489,39 @@ export default {
       this.isDropdownTypesOpen = false;
     },
     print() {
-      const data = new FormData(this.$refs.form);
-      const value = Object.fromEntries(data);
-      console.log(value);
-      this.$refs.form.reset();
-    },
-    getCitizenship(searchWord) {
-      console.log("FETCH CITIZENSHIP EVENT: GET CITIZENSHIP FROM API", searchWord);
+      this.isSubmitted = true;
+      const isValid = this.isLastNameValid && this.isNameValid && this.isPatrValid && this.isOldLastNameValid && this.isOldNameValid && this.isBirthDateValid 
+                      && this.isEmailValid && this.isLastNameOtherValid && this.isFirstNameOtherValid && this.isPassSeriaValid && this.isPassRusNumValid;
+      if (isValid) {
+        const data = new FormData(this.$refs.form);
+        const value = Object.fromEntries(data);
+        console.log(value);
+        this.$refs.form.reset();
 
+        this.isSubmitted = false;
+        this.resetForm();
+      }
+    },
+    resetForm() {
+      this.name_picked = "Нет";
+      this.gender_picked = "Мужской";
+      this.selected_citizenship = '';
+      this.searchCitizenship = '';
+      this.selected_country = '';
+      this.selected_pass_type = '';
+
+     for (let key in this.dataForm) {
+       this.dataForm[key] = '';
+     }
+    },
+   getCitizenship(searchWord) {
+      console.log("FETCH CITIZENSHIP EVENT: GET CITIZENSHIP FROM API", searchWord);
       this.citizenship = citizenshipJson.filter((cit) => {
         return cit.nationality.toLowerCase().includes(searchWord.toLowerCase()) }
       );
+    },
+    getDebouncedCitizenship(newValue) { 
+      debounce(this.getCitizenship, 1000)(newValue)
     },
     chooseCitizenship(e) {
       this.searchCitizenship = e.target.innerText;
@@ -394,141 +540,10 @@ export default {
       this.selected_pass_type = e.target.innerText;
       this.hidePassportTypes();
     },
-    onRusInput() {
-      let valid = true;
-      const data = new FormData(this.$refs.form);
-      const value = Object.fromEntries(data);
-      if (!RUS_REG_EXP.test(value.last_name)) {
-        this.$refs.last_name.classList.add('invalid');
-        alert("Проверьте правильность ввода Фамилии. Можно вводить только русские буквы.");
-        valid = false;
-      } else {
-        this.$refs.last_name.classList.remove('invalid');
-      }
-      if (!RUS_REG_EXP.test(value.first_name)) {
-        this.$refs.first_name.classList.add('invalid');
-        alert("Проверьте правильность ввода Имени. Можно вводить только русские буквы.");
-        valid = false;
-      } else {
-        this.$refs.first_name.classList.remove('invalid');
-      }
-      if (!PATR_REG_EXP.test(value.patronimyc)) {
-        this.$refs.patronimyc.classList.add('invalid');
-        alert("Проверьте правильность ввода Отчества. Можно вводить только русские буквы.");
-        valid = false;
-      } else {
-        this.$refs.patronimyc.classList.remove('invalid');
-      }
-      if (this.name_picked === 'Да') {
-        if (!RUS_REG_EXP.test(value.old_last_name)) {
-          this.$refs?.old_last_name?.classList.add('invalid');
-          alert("Проверьте правильность ввода Предыдущей фамилии. Можно вводить только русские буквы.");
-          valid = false;
-        } else {
-          this.$refs?.old_last_name?.classList.remove('invalid');
-        }
-        if (!RUS_REG_EXP.test(value.old_first_name)) {
-          this.$refs?.old_first_name?.classList.add('invalid');
-          alert("Проверьте правильность ввода Предыдущего имени. Можно вводить только русские буквы.");
-          valid = false;
-        } else {
-          this.$refs?.old_first_name?.classList.remove('invalid');
-        }
-      }
-      return valid;
-    },
-    validateBirthDate() {
-      const data = new FormData(this.$refs.form);
-      const value = Object.fromEntries(data);
-      let today = new Date().toISOString().substring(0, 10);
-      if (!DATE_REG_EXP.test(value.birthday_date) || value.birthday_date > today || value.birthday_date < '1900-01-01') {
-        alert("Проверьте правильность ввода Даты рождения");
-        this.$refs.birthday_date.classList.add('invalid');
-        return false;
-      } else {
-        this.$refs.birthday_date.classList.remove('invalid');
-      }
-      
-      return true;
-    },
-    validateEmail() {
-      const data = new FormData(this.$refs.form);
-      const value = Object.fromEntries(data);
-
-      if (!EMAIL_REG_EXP.test(value.email)) {
-        alert("Проверьте правильность ввода email");
-        this.$refs.email.classList.add('invalid');
-        return false;
-      } else {
-        this.$refs.email.classList.remove('invalid');
-      }
-
-      return true;
-    },
-    validatePassport() {
-      let valid = true;
-      const data = new FormData(this.$refs.form);
-      const value = Object.fromEntries(data);
-      if (this.selected_citizenship === 'Russia') {
-        if (!PASS_SER_REG_EXP.test(value.pass_seria)) {
-          alert("Проверьте правильность ввода Серии паспорта. Она должна состоять из четрых цифр.");
-          this.$refs.pass_seria.classList.add('invalid');
-          valid = false;
-        } else {
-          this.$refs.pass_seria.classList.remove('invalid');
-        }
-        if (!PASS_NUM_RUS_REG_EXP.test(value.pass_num)) {
-          alert("Проверьте правильность ввода Номера паспорта. Он должен состоять из шести цифр.");
-          this.$refs.pass_num.classList.add('invalid');
-          valid = false;
-        } else {
-          this.$refs.pass_num.classList.remove('invalid');
-        }
-      } else {
-        if (!ENG_REG_EXP.test(value.last_name_other)) {
-          alert("Проверьте правильность ввода Фамилии на латинице");
-          this.$refs.last_name_other.classList.add('invalid');
-          valid = false;
-        } else {
-          this.$refs.last_name_other.classList.remove('invalid');
-        }
-        if (!ENG_REG_EXP.test(value.first_name_other)) {
-          alert("Проверьте правильность ввода Имени на латинице");
-          this.$refs.first_name_other.classList.add('invalid');
-          valid = false;
-        } else {
-          this.$refs.first_name_other.classList.remove('invalid');
-        }
-      }
-
-      return valid;
-    },
-    validate() { 
-      const isValidRus = this.onRusInput();
-      const isValidDate = this.validateBirthDate();
-      const isValidEmail = this.validateEmail();
-      const isValidPassport = this.validatePassport();
-      
-      const isValid = isValidRus && isValidDate && isValidEmail && isValidPassport;
-
-      if (isValid) {
-        this.print();
-        this.name_picked = "Нет";
-        this.gender_picked = "Мужской";
-        this.selected_citizenship = '';
-        this.searchCitizenship = '';
-        this.selected_country = '';
-        this.selected_pass_type = '';
-      }
-    }
-  },
-  created() {
-    this.citizenship = citizenshipJson;
-    this.debouncedSearchCitizenship = debounce(this.getCitizenship, 1000);
   },
   watch: {
     searchCitizenship(newValue) {
-      this.debouncedSearchCitizenship(newValue);
+      this.getDebouncedCitizenship(newValue);
     },
   },
   directives: {
